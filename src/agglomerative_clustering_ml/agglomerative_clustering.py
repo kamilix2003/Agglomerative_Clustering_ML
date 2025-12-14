@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # agglomerative.py
 """
-Agglomerative clustering (NumPy-only) with multiple linkages and SciPy-style linkage output.
+Agglomerative clustering with multiple linkages and SciPy-style linkage output.
 
 This module provides a straightforward, vectorized implementation of agglomerative
 (hierarchical) clustering. It stores the full pairwise distance matrix (O(n^2) memory),
 uses a heap (lazy deletion) to choose merges, and updates inter-cluster distances
-via Lance–Williams-like updates (vectorized). Supported linkages:
-    - 'single', 'complete', 'average'
+via Lance-Williams-like updates (vectorized). Supported linkages: 'single', 'complete', 'average'
 
-Doxygen-style docstrings are used (with @param / @return tags).
 """
 
 from typing import Tuple, List, Optional
@@ -33,8 +31,7 @@ def compute_pairwise_distances(X: np.ndarray) -> np.ndarray:
     Compute full pairwise Euclidean distance matrix for rows of X.
 
     @param X: 2D array, shape (n_samples, n_features). Rows are observations.
-    @return: 2D array D shape (n_samples, n_samples) where D[i, j] is the Euclidean
-             distance between X[i] and X[j]. The diagonal entries are zero.
+    @return: 2D array D shape (n_samples, n_samples) where D[i, j] is the Euclidean distance between X[i] and X[j]. The diagonal entries are zero.
     """
     X = np.asarray(X, dtype=float)
     sq = np.sum(X * X, axis=1, keepdims=True)  # (n,1)
@@ -84,7 +81,7 @@ def lance_williams_update(linkage: str,
                           d_ik: float, d_jk: float, 
                           size_i: int, size_j: int) -> float:
     """
-    Simple Lance–Williams update for the common linkages single/complete/average.
+    Simple Lance-Williams update for the common linkages single/complete/average.
 
     @param linkage: 'single' | 'complete' | 'average'
     @param d_ik: distance between cluster i and k
@@ -210,8 +207,7 @@ def agglomerative(X: np.ndarray,
     @param X: data matrix shape (n_samples, n_features)
     @param n_clusters: desired number of clusters (1 <= n_clusters <= n_samples)
     @param linkage: one of 'single', 'complete', 'average'
-    @param return_linkage: if True, also return SciPy-style linkage matrix Z shape (n-1, 4)
-                           with rows [idx1, idx2, dist, new_cluster_size]
+    @param return_linkage: if True, also return SciPy-style linkage matrix Z shape (n-1, 4) with rows [idx1, idx2, dist, new_cluster_size]
 
     @return: tuple (labels, linkage_matrix_or_None)
         - labels: integer array shape (n_samples,) with labels 0..(n_clusters-1)

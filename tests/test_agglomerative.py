@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from agglomerative_clustering_ml.agglomerative_clustring import (
-    pairwise_distances,
+from agglomerative_clustering_ml.agglomerative_clustering import (
+    compute_pairwise_distances,
     init_clusters,
     pair_to_heap_entries,
     lance_williams_update,
@@ -21,7 +21,7 @@ def test_pairwise_distances_basic_properties():
     - correctness on a known example
     """
     X = np.array([[0, 0], [3, 4], [6, 8]])
-    D = pairwise_distances(X)
+    D = compute_pairwise_distances(X)
     
     assert D.shape == (3, 3)
 
@@ -39,7 +39,7 @@ def test_pairwise_distances_matches_naive():
     """
     rng = np.random.default_rng(0)
     X = rng.normal(size=(7, 3))
-    D = pairwise_distances(X)
+    D = compute_pairwise_distances(X)
 
     Dn = np.zeros((X.shape[0], X.shape[0]))
     for i in range(X.shape[0]):
@@ -83,7 +83,7 @@ def test_pair_to_heap_entries_size_and_min():
     X = np.array([[0.0, 0.0],
                   [1.0, 0.0],
                   [10.0, 0.0]])
-    D = pairwise_distances(X)
+    D = compute_pairwise_distances(X)
     heap = pair_to_heap_entries(D)
 
     n = D.shape[0]
@@ -104,20 +104,18 @@ def test_pair_to_heap_entries_size_and_min():
 )
 def test_lance_williams_update_scalar(linkage, expected):
     """
-    Test Lance–Williams distance update formula for supported linkage types.
+    Test Lance-Williams distance update formula for supported linkage types.
     """
     d_ik = 2.0
     d_jk = 5.0
-    d_ij = 99.0
     size_i = 1
     size_j = 3
-    size_k = 7
-    out = lance_williams_update(linkage, d_ik, d_jk, d_ij, size_i, size_j, size_k)
+    out = lance_williams_update(linkage, d_ik, d_jk, size_i, size_j)
     assert pytest.approx(out, abs=1e-12) == expected
 
 def test_lance_williams_update_invalid_linkage():
     with pytest.raises(ValueError):
-        lance_williams_update("weird", 1.0, 2.0, 3.0, 1, 1, 1)
+        lance_williams_update("weird", 1.0, 2.0, 1, 1)
 
 def test_extract_min_pair_skips_stale_entries():
     """
@@ -129,7 +127,7 @@ def test_extract_min_pair_skips_stale_entries():
     X = np.array([[0.0, 0.0],
                   [1.0, 0.0],
                   [5.0, 0.0]])
-    D = pairwise_distances(X)
+    D = compute_pairwise_distances(X)
     active, sizes, members = init_clusters(3)
     heap = pair_to_heap_entries(D)
 
@@ -149,7 +147,7 @@ def test_merge_clusters_updates_state_average_linkage():
     X = np.array([[0.0, 0.0],
                   [1.0, 0.0],
                   [10.0, 0.0]])
-    D = pairwise_distances(X)
+    D = compute_pairwise_distances(X)
     active, sizes, members = init_clusters(3)
     heap = pair_to_heap_entries(D)
 
@@ -164,14 +162,14 @@ def test_merge_clusters_updates_state_average_linkage():
     assert sizes[j] == 0
 
     other = 2
-    expected = (1 * pairwise_distances(X)[i, other] + 1 * pairwise_distances(X)[j, other]) / 2.0
+    expected = (1 * compute_pairwise_distances(X)[i, other] + 1 * compute_pairwise_distances(X)[j, other]) / 2.0
     assert pytest.approx(D[i, other], rel=1e-10, abs=1e-10) == expected
     assert pytest.approx(D[other, i], rel=1e-10, abs=1e-10) == expected
 
 def test_merge_clusters_rejects_invalid():
     X = np.array([[0.0, 0.0],
                   [1.0, 0.0]])
-    D = pairwise_distances(X)
+    D = compute_pairwise_distances(X)
     active, sizes, members = init_clusters(2)
     heap = pair_to_heap_entries(D)
 
