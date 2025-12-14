@@ -93,9 +93,9 @@ def lance_williams_update(linkage: str,
     @return: updated distance d(iuj, k)
     """
     if linkage == "single":
-        return min(d_ik, d_jk)
+        return np.minimum(d_ik, d_jk)
     elif linkage == "complete":
-        return max(d_ik, d_jk)
+        return np.maximum(d_ik, d_jk)
     elif linkage == "average":
         return (size_i * d_ik + size_j * d_jk) / (size_i + size_j)
     else:

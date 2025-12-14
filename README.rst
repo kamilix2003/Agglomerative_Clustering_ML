@@ -9,14 +9,14 @@ Agglomerative_Clustering_ML
 
 Project is part of Programming in Python Language course.
 
-===
+=============
 Example usage
-===
+=============
 
-::
+.. code-block::
+
     from agglomerative_clustering_ml.agglomerative_clustering import agglomerative
 
-if __name__ == "__main__":
     # Example dataset
     X = [
         [1.0, 0.0],
